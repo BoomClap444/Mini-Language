@@ -21,7 +21,7 @@ public class Lexer {
 
         int first = this.pos;
         char current = this.source.charAt(this.pos);
-        TokenType type = TokenType.UNDEFINED;
+        TokenType type = TokenType.UNKNOWN;
 
         if (Character.isDigit(current)) {
             type = TokenType.NUMBER;
@@ -35,8 +35,88 @@ public class Lexer {
                 this.pos++;
             }
         }
+        else if (isOperator(current)) {
+            switch (current) {
+                case '+':
+                    type = TokenType.PLUS;
+                    break;
+                case '-':
+                    type = TokenType.MINUS;
+                    break;
+                case '*':
+                    type = TokenType.MULTIPLY;
+                    break;
+                case '/':
+                    type = TokenType.DIVIDE;
+                    break;
+                case '=':
+                    type = TokenType.EQUALS;
+                    break;
+                default:
+                    break;
+            }
+            this.pos++;
+        }
+        else if (isPunc(current)) {
+            switch (current) {
+                case '(':
+                    type = TokenType.LEFT_PAREN;
+                    break;
+                case ')':
+                    type = TokenType.RIGHT_PAREN;
+                    break;
+                case '}':
+                    type = TokenType.RIGHT_BRACE;
+                    break;
+                case '{':
+                    type = TokenType.LEFT_BRACE;
+                    break;
+                default:
+                    break;
+            }
+            this.pos++;
+        }
+        else{
+            this.pos++;
+        }
 
-        return new Token(type, this.source.substring(first, this.pos));
+        String text = this.source.substring(first, this.pos);
+        if (isKeyword(text)) {
+            switch (text) {
+                case "let":
+                    type = TokenType.LET;
+                    break;
+                case "if":
+                    type = TokenType.IF;
+                    break;
+                case "else":
+                    type = TokenType.ELSE;
+                    break;
+                case "function":
+                    type = TokenType.FUNC;
+                    break;
+                case "return":
+                    type = TokenType.RETURN;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return new Token(type, text);
+    }
+
+    static boolean isKeyword(String s) {
+        return s.equals("let") || s.equals("if") ||
+        s.equals("else") || s.equals("function") ||
+        s.equals("return");
+    }
+
+    static boolean isOperator(char c) {
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '=';
+    }
+
+    static boolean isPunc(char c) {
+        return c == '{' || c == '(' || c == ')' || c == '}';
     }
 
     public List<Token> getTokens() {
