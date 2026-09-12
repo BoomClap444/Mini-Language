@@ -12,6 +12,7 @@ public class Token {
     }
 
     public void printToken() {
+        System.out.println();
         System.out.println(this.type);
         System.out.println(this.text);
     }
