@@ -71,6 +71,9 @@ public class Lexer {
                 case '{':
                     type = TokenType.LEFT_BRACE;
                     break;
+                case ';':
+                    type = TokenType.SEMICOLON;
+                    break;
                 default:
                     break;
             }
@@ -116,7 +119,7 @@ public class Lexer {
     }
 
     static boolean isPunc(char c) {
-        return c == '{' || c == '(' || c == ')' || c == '}';
+        return c == '{' || c == '(' || c == ')' || c == '}' || c == ';';
     }
 
     public List<Token> getTokens() {

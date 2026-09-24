@@ -10,6 +10,7 @@ public enum TokenType {
     RIGHT_PAREN,
     LEFT_BRACE,
     RIGHT_BRACE,
+    SEMICOLON,
 
     // keywords
     LET,

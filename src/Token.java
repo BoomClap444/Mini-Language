@@ -10,6 +10,10 @@ public class Token {
     public TokenType getType() {
         return type;
     }
+    
+    public String getText() {
+        return this.text;
+    }
 
     public void printToken() {
         System.out.println();
