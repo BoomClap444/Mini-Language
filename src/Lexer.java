@@ -79,6 +79,20 @@ public class Lexer {
             }
             this.pos++;
         }
+        else if (current == '"') {
+            type = TokenType.STRING;
+            this.pos++;
+
+            while (this.pos < this.source.length() && this.source.charAt(this.pos) != '"') {
+                this.pos++;
+            }
+
+            if (this.pos >= this.source.length()) {
+                throw new IllegalArgumentException("Unterminated string");
+            }
+            
+            this.pos++;
+        }
         else{
             this.pos++;
         }

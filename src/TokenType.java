@@ -1,6 +1,6 @@
 public enum TokenType {
     // literals
-    IDENTIFIER, NUMBER,
+    IDENTIFIER, NUMBER, STRING,
     
     // ops
     PLUS, MINUS, MULTIPLY, DIVIDE, EQUALS,
