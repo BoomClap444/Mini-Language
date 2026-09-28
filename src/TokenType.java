@@ -4,6 +4,17 @@ public enum TokenType {
     
     // ops
     PLUS, MINUS, MULTIPLY, DIVIDE, EQUALS,
+
+    // comparators
+    LESS_THAN,
+    GREATER_THAN,
+    LESS_EQUALS,
+    GREATER_EQUALS,
+    EQUALS_EQUALS,
+    NOT_EQUALS,
+    NOT,
+    AND,
+    OR,
     
     // punctuation
     LEFT_PAREN,
@@ -18,6 +29,8 @@ public enum TokenType {
     ELSE,
     FUNC,
     RETURN,
+    TRUE,
+    FALSE,
 
     // eof, unknown
     EOF,

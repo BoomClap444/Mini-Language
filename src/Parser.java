@@ -24,7 +24,45 @@ public class Parser {
             return parseLetStatement();
         }
 
+        if (currentToken().getType() == TokenType.IF) {
+            return parseIfStatement();
+        }
+
         throw new IllegalArgumentException("ERROR: UNEXPECTED STATEMENT");
+    }
+
+    private BlockStatement parseBlockStatement() {
+        advance(); // {
+
+        List<ASTNode> statements = new ArrayList<>();
+
+        while (currentToken().getType() != TokenType.RIGHT_BRACE) {
+            if (currentToken().getType() == TokenType.EOF) {
+                throw new IllegalArgumentException("ERROR: EXPECTED '}'");
+            }
+            statements.add(parseStatement());
+        }
+
+        advance(); // }
+
+        return new BlockStatement(statements);
+    }
+
+    private IfStatement parseIfStatement() {
+        advance(); // IF
+
+        ASTNode condition = parseExpression();
+
+        BlockStatement thenBranch = parseBlockStatement();
+
+        if (currentToken().getType() == TokenType.ELSE) {
+            advance(); // ELSE
+            BlockStatement elseBranch = parseBlockStatement();
+
+            return new IfStatement(condition, thenBranch, elseBranch);
+        }
+
+        return new IfStatement(condition, thenBranch, null);
     }
 
     private Token currentToken() {
@@ -51,7 +89,58 @@ public class Parser {
     }
 
     private ASTNode parseExpression() {
-        return parseAddition();
+        return parseLogicalOr();
+    }
+
+    private ASTNode parseLogicalOr() {
+        ASTNode left = parseLogicalAnd();
+
+        while (currentToken().getType() == TokenType.OR) {
+            TokenType operator = currentToken().getType();
+            advance();
+
+            ASTNode right = parseLogicalAnd();
+
+            left = new BinaryExpression(left, operator, right);
+        }
+
+        return left;
+    }
+
+    private ASTNode parseLogicalAnd() {
+        ASTNode left = parseComparison();
+
+        while (currentToken().getType() == TokenType.AND) {
+            TokenType operator = currentToken().getType();
+            advance();
+
+            ASTNode right = parseComparison();
+
+            left = new BinaryExpression(left, operator, right);
+        }
+
+        return left;
+    }
+
+    private ASTNode parseComparison() {
+        ASTNode left = parseAddition();
+
+        while (currentToken().getType() == TokenType.LESS_THAN ||
+            currentToken().getType() == TokenType.GREATER_THAN ||
+            currentToken().getType() == TokenType.LESS_EQUALS ||
+            currentToken().getType() == TokenType.GREATER_EQUALS ||
+            currentToken().getType() == TokenType.EQUALS_EQUALS ||
+            currentToken().getType() == TokenType.NOT_EQUALS) {
+
+            TokenType operator = currentToken().getType();
+            advance();
+
+            ASTNode right = parseAddition();
+
+            left = new BinaryExpression(left, operator, right);
+        }
+
+        return left;
     }
 
     private ASTNode parseAddition() {
@@ -112,6 +201,27 @@ public class Parser {
             ASTNode expression = new NumberLiteral(Integer.parseInt(currentToken().getText()));
             advance();
             return expression;
+        }
+
+        if (currentToken().getType() == TokenType.TRUE) {
+            ASTNode expression = new BooleanLiteral(true);
+            advance();
+            return expression;
+        }
+
+        if (currentToken().getType() == TokenType.FALSE) {
+            ASTNode expression = new BooleanLiteral(false);
+            advance();
+            return expression;
+        }
+
+        if (currentToken().getType() == TokenType.NOT) {
+            TokenType operator = currentToken().getType();
+            advance();
+
+            ASTNode operand = parsePrimary();
+
+            return new UnaryExpression(operator, operand);
         }
 
         throw new IllegalArgumentException("ERROR: UNEXPECTED TYPE");

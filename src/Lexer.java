@@ -35,6 +35,66 @@ public class Lexer {
                 this.pos++;
             }
         }
+        else if (isComparison(current)) {
+            boolean hasNextEquals = false;
+            if (this.pos + 1 < this.source.length() && this.source.charAt(this.pos + 1) == '=') {
+                hasNextEquals = true;
+            }
+            
+            switch (current) {
+                case '=':
+                    if (hasNextEquals) {
+                        type = TokenType.EQUALS_EQUALS;
+                        this.pos++;
+                    } else {
+                        type = TokenType.EQUALS;
+                    }
+                    break;
+                case '<':
+                    if (hasNextEquals) {
+                        type = TokenType.LESS_EQUALS;
+                        this.pos++;
+                    }
+                    else {
+                        type = TokenType.LESS_THAN;
+                    }
+                    break;
+                case '>':
+                    if (hasNextEquals) {
+                        type = TokenType.GREATER_EQUALS;
+                        this.pos++;
+                    }
+                    else {
+                        type = TokenType.GREATER_THAN;
+                    }
+                    break;
+                case '!':
+                    if (hasNextEquals) {
+                        type = TokenType.NOT_EQUALS;
+                        this.pos++;
+                    }
+                    else {
+                        type = TokenType.NOT;
+                    }
+                    break;
+            }
+            this.pos++;
+        }
+        else if (current == '|' || current == '&') {
+            if (this.pos + 1 < this.source.length() && this.source.charAt(this.pos + 1) == current) {
+                if (current == '|') {
+                    type = TokenType.OR;
+                }
+                else {
+                    type = TokenType.AND;
+                }
+                this.pos += 2;
+            }
+            else {
+                type = TokenType.UNKNOWN;
+                this.pos++;
+            }
+        }
         else if (isOperator(current)) {
             switch (current) {
                 case '+':
@@ -48,9 +108,6 @@ public class Lexer {
                     break;
                 case '/':
                     type = TokenType.DIVIDE;
-                    break;
-                case '=':
-                    type = TokenType.EQUALS;
                     break;
                 default:
                     break;
@@ -115,6 +172,12 @@ public class Lexer {
                 case "return":
                     type = TokenType.RETURN;
                     break;
+                case "true":
+                    type = TokenType.TRUE;
+                    break;
+                case "false":
+                    type = TokenType.FALSE;
+                    break;
                 default:
                     break;
             }
@@ -125,11 +188,17 @@ public class Lexer {
     static boolean isKeyword(String s) {
         return s.equals("let") || s.equals("if") ||
         s.equals("else") || s.equals("function") ||
-        s.equals("return");
+        s.equals("return") ||
+        s.equals("false") ||
+        s.equals("true");
+    }
+
+    static boolean isComparison(char c) {
+        return c == '<' || c == '>' || c == '!' || c == '=';
     }
 
     static boolean isOperator(char c) {
-        return c == '+' || c == '-' || c == '*' || c == '/' || c == '=';
+        return c == '+' || c == '-' || c == '*' || c == '/';
     }
 
     static boolean isPunc(char c) {
