@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
@@ -9,11 +10,28 @@ public class Parser {
         this.pos = 0;
     }
 
-    public Token currentToken() {
+    public Program parseProgram() {
+        List<ASTNode> statements = new ArrayList<>();
+        while (currentToken().getType() != TokenType.EOF) {
+            statements.add(parseStatement());
+        }
+
+        return new Program(statements);
+    }
+
+    private ASTNode parseStatement() {
+        if (currentToken().getType() == TokenType.LET) {
+            return parseLetStatement();
+        }
+
+        throw new IllegalArgumentException("ERROR: UNEXPECTED STATEMENT");
+    }
+
+    private Token currentToken() {
         return tokens.get(this.pos);
     }
 
-    public void advance() {
+    private void advance() {
         this.pos++;
     }
 
