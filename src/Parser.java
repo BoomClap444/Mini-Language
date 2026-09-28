@@ -28,6 +28,20 @@ public class Parser {
             return parseIfStatement();
         }
 
+        if (currentToken().getType() == TokenType.WHILE) {
+            return parseWhileStatement();
+        }
+
+        if (currentToken().getType() == TokenType.FOR) {
+            return parseForStatement();
+        }
+
+        if (currentToken().getType() == TokenType.IDENTIFIER) {
+            if (tokens.get(pos + 1).getType() == TokenType.EQUALS) {
+                return parseAssignmentStatement();
+            }
+        }
+        
         throw new IllegalArgumentException("ERROR: UNEXPECTED STATEMENT");
     }
 
@@ -63,6 +77,43 @@ public class Parser {
         }
 
         return new IfStatement(condition, thenBranch, null);
+    }
+
+    private WhileStatement parseWhileStatement() {
+        advance(); // WHILE
+
+        ASTNode condition = parseExpression();
+
+        BlockStatement body = parseBlockStatement();
+
+        return new WhileStatement(condition, body);
+    }
+
+    private ForStatement parseForStatement() {
+        advance(); // FOR
+
+        ASTNode initialization = parseStatement();
+        ASTNode condition = parseExpression();
+        expect(TokenType.SEMICOLON);
+
+        ASTNode update = parseExpression();
+
+        BlockStatement body = parseBlockStatement();
+
+        return new ForStatement(initialization, condition, update, body);
+    }
+
+    private AssignmentStatement parseAssignmentStatement() {
+        String variableName = currentToken().getText();
+        advance(); // IDENTIFIER
+
+        expect(TokenType.EQUALS);
+
+        ASTNode value = parseExpression();
+
+        expect(TokenType.SEMICOLON);
+
+        return new AssignmentStatement(variableName, value);
     }
 
     private Token currentToken() {

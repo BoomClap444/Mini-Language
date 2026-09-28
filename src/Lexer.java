@@ -178,6 +178,12 @@ public class Lexer {
                 case "false":
                     type = TokenType.FALSE;
                     break;
+                case "while":
+                    type = TokenType.WHILE;
+                    break;
+                case "for":
+                    type = TokenType.FOR;
+                    break;
                 default:
                     break;
             }
@@ -190,7 +196,7 @@ public class Lexer {
         s.equals("else") || s.equals("function") ||
         s.equals("return") ||
         s.equals("false") ||
-        s.equals("true");
+        s.equals("true") || s.equals("while") || s.equals("for");
     }
 
     static boolean isComparison(char c) {

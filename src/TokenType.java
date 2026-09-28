@@ -29,6 +29,8 @@ public enum TokenType {
     ELSE,
     FUNC,
     RETURN,
+    WHILE,
+    FOR,
     TRUE,
     FALSE,
 

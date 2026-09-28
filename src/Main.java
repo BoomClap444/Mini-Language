@@ -6,12 +6,8 @@ public class Main {
 
 
         String source = """
-        let x = 10;
-
-        if x > 5 {
-            let y = 20;
-        } else {
-            let y = 0;
+        for let i = 0; i < 10; i {
+            let x = i;
         }
         """;
         
