@@ -1,5 +1,23 @@
+package parser;
 import java.util.ArrayList;
 import java.util.List;
+
+import ast.ASTNode;
+import ast.AssignmentStatement;
+import ast.BinaryExpression;
+import ast.BlockStatement;
+import ast.BooleanLiteral;
+import ast.ForStatement;
+import ast.IdentifierExpression;
+import ast.IfStatement;
+import ast.LetStatement;
+import ast.NumberLiteral;
+import ast.Program;
+import ast.StringLiteral;
+import ast.UnaryExpression;
+import ast.WhileStatement;
+import lexer.Token;
+import lexer.TokenType;
 
 public class Parser {
     private final List<Token> tokens;
@@ -104,14 +122,18 @@ public class Parser {
     }
 
     private AssignmentStatement parseAssignmentStatement() {
+        AssignmentStatement assignment = parseAssignment();
+        expect(TokenType.SEMICOLON);
+        return assignment;
+    }
+
+    private AssignmentStatement parseAssignment() {
         String variableName = currentToken().getText();
         advance(); // IDENTIFIER
 
         expect(TokenType.EQUALS);
 
         ASTNode value = parseExpression();
-
-        expect(TokenType.SEMICOLON);
 
         return new AssignmentStatement(variableName, value);
     }

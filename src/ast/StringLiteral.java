@@ -1,3 +1,5 @@
+package ast;
+
 public class StringLiteral implements ASTNode {
     private final String value;
 

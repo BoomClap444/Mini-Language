@@ -1,3 +1,5 @@
+package ast;
+
 public class WhileStatement implements ASTNode {
     private final ASTNode condition;
     private final BlockStatement body;

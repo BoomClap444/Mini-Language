@@ -1,9 +1,10 @@
+package ast;
 import java.util.List;
 
-public class Program implements ASTNode {
+public class BlockStatement implements ASTNode {
     private final List<ASTNode> statements;
 
-    public Program(List<ASTNode> statements) {
+    public BlockStatement(List<ASTNode> statements) {
         this.statements = statements;
     }
 

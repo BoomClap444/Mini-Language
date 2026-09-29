@@ -1,3 +1,5 @@
+package ast;
+
 public class NumberLiteral implements ASTNode {
     private final int value;
 

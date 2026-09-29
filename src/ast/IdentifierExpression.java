@@ -1,3 +1,5 @@
+package ast;
+
 public class IdentifierExpression implements ASTNode {
     private final String name;
 

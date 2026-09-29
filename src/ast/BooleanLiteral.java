@@ -1,3 +1,5 @@
+package ast;
+
 public class BooleanLiteral implements ASTNode {
     private boolean value;
 

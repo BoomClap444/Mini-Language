@@ -1,3 +1,5 @@
+package ast;
+
 public class AssignmentStatement implements ASTNode {
     private final String variableName;
     private final ASTNode value;

@@ -1,3 +1,6 @@
+package ast;
+import lexer.TokenType;
+
 public class UnaryExpression implements ASTNode {
     private final TokenType operator;
     private final ASTNode operand;

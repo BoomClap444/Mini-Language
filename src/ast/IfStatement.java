@@ -1,3 +1,5 @@
+package ast;
+
 public class IfStatement implements ASTNode {
     private final ASTNode condition;
     private final BlockStatement thenBranch;

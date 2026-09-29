@@ -1,3 +1,5 @@
+package ast;
+
 public class LetStatement implements ASTNode {
     private final String varName;
     private final ASTNode value;

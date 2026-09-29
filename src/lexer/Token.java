@@ -1,3 +1,5 @@
+package lexer;
+
 public class Token {
     TokenType type;
     String text;

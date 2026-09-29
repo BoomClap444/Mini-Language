@@ -1,3 +1,6 @@
+package ast;
+import lexer.TokenType;
+
 public class BinaryExpression implements ASTNode {
     private final ASTNode left;
     private final TokenType op;

@@ -1,3 +1,5 @@
+package ast;
+
 public class ForStatement implements ASTNode {
     private final ASTNode initialization;
     private final ASTNode condition;

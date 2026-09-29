@@ -1,14 +1,18 @@
 import java.util.List;
 
+import ast.Program;
+import lexer.Lexer;
+import lexer.Token;
+import parser.Parser;
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("running");
 
 
         String source = """
-        for let i = 0; i < 10; i {
-            let x = i;
-        }
+        let i = 0;
+        i = i + 1;
         """;
         
         // PRINT TOKENS AFTER LEXING
