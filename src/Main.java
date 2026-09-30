@@ -11,8 +11,11 @@ public class Main {
 
 
         String source = """
-        let i = 0;
-        i = i + 1;
+        func add(a, b) {
+            return a + b;
+        }
+
+        let x = add(5, 10);
         """;
         
         // PRINT TOKENS AFTER LEXING

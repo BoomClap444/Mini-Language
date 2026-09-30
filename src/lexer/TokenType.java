@@ -24,6 +24,7 @@ public enum TokenType {
     LEFT_BRACE,
     RIGHT_BRACE,
     SEMICOLON,
+    COMMA,
 
     // keywords
     LET,

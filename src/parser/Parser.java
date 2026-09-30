@@ -8,11 +8,14 @@ import ast.BinaryExpression;
 import ast.BlockStatement;
 import ast.BooleanLiteral;
 import ast.ForStatement;
+import ast.FunctionCall;
+import ast.FunctionDeclaration;
 import ast.IdentifierExpression;
 import ast.IfStatement;
 import ast.LetStatement;
 import ast.NumberLiteral;
 import ast.Program;
+import ast.ReturnStatement;
 import ast.StringLiteral;
 import ast.UnaryExpression;
 import ast.WhileStatement;
@@ -37,6 +40,68 @@ public class Parser {
         return new Program(statements);
     }
 
+    private FunctionDeclaration parseFunctionDeclaration() {
+        advance(); // FUNC
+
+        String name = currentToken().getText();
+        expect(TokenType.IDENTIFIER);
+
+        expect(TokenType.LEFT_PAREN);
+
+        List<String> parameters = new ArrayList<>();
+
+        if (currentToken().getType() != TokenType.RIGHT_PAREN) {
+            while (true) {
+                parameters.add(currentToken().getText());
+                expect(TokenType.IDENTIFIER);
+
+                if (currentToken().getType() != TokenType.COMMA) {
+                    break;
+                }
+
+                advance(); // COMMA
+            }
+        }
+
+        expect(TokenType.RIGHT_PAREN);
+
+        BlockStatement body = parseBlockStatement();
+
+        return new FunctionDeclaration(name, parameters, body);
+    }
+
+    private ReturnStatement parseReturnStatement() {
+        advance(); // RETURN
+
+        ASTNode value = parseExpression();
+
+        expect(TokenType.SEMICOLON);
+
+        return new ReturnStatement(value);
+    }
+
+    private FunctionCall parseFunctionCall() {
+        String name = currentToken().getText();
+        expect(TokenType.IDENTIFIER);
+
+        expect(TokenType.LEFT_PAREN);
+
+        List<ASTNode> arguments = new ArrayList<>();
+
+        if (currentToken().getType() != TokenType.RIGHT_PAREN) {
+            arguments.add(parseExpression());
+
+            while (currentToken().getType() == TokenType.COMMA) {
+                advance();
+                arguments.add(parseExpression());
+            }
+        }
+
+        expect(TokenType.RIGHT_PAREN);
+
+        return new FunctionCall(name, arguments);
+    }
+    
     private ASTNode parseStatement() {
         if (currentToken().getType() == TokenType.LET) {
             return parseLetStatement();
@@ -54,11 +119,20 @@ public class Parser {
             return parseForStatement();
         }
 
+        if (currentToken().getType() == TokenType.FUNC) {
+            return parseFunctionDeclaration();
+        }
+
+        if (currentToken().getType() == TokenType.RETURN) {
+            return parseReturnStatement();
+        }
+
         if (currentToken().getType() == TokenType.IDENTIFIER) {
             if (tokens.get(pos + 1).getType() == TokenType.EQUALS) {
                 return parseAssignmentStatement();
             }
         }
+        
         
         throw new IllegalArgumentException("ERROR: UNEXPECTED STATEMENT");
     }
@@ -110,11 +184,11 @@ public class Parser {
     private ForStatement parseForStatement() {
         advance(); // FOR
 
-        ASTNode initialization = parseStatement();
+        ASTNode initialization = parseLetStatement();
         ASTNode condition = parseExpression();
         expect(TokenType.SEMICOLON);
 
-        ASTNode update = parseExpression();
+        ASTNode update = parseAssignment();
 
         BlockStatement body = parseBlockStatement();
 
@@ -259,6 +333,10 @@ public class Parser {
             return expression;
         }
         if (currentToken().getType() == TokenType.IDENTIFIER) {
+            if (tokens.get(pos + 1).getType() == TokenType.LEFT_PAREN) {
+                return parseFunctionCall();
+            }
+
             ASTNode expression = new IdentifierExpression(currentToken().getText());
             advance();
             return expression;
