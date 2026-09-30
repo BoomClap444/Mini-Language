@@ -5,17 +5,15 @@ import lexer.Lexer;
 import lexer.Token;
 import parser.Parser;
 
+import interpreter.Interpreter;
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("running");
 
 
         String source = """
-        func add(a, b) {
-            return a + b;
-        }
-
-        let x = add(5, 10);
+        let x = 5 + 10 * 2;
         """;
         
         // PRINT TOKENS AFTER LEXING
@@ -28,5 +26,9 @@ public class Main {
         Parser parser = new Parser(lexer.getTokens());
         Program program = parser.parseProgram();
         
+
+        // INTERPRET
+        Interpreter interpreter = new Interpreter();
+        interpreter.execute(program);
     }
 }
