@@ -135,6 +135,13 @@ public class Lexer {
                 case ',':
                     type = TokenType.COMMA;
                     break;
+                case '[':
+                    type = TokenType.LEFT_BRACKET;
+                    break;
+
+                case ']':
+                    type = TokenType.RIGHT_BRACKET;
+                    break;
                 default:
                     break;
             }
@@ -212,7 +219,7 @@ public class Lexer {
     }
 
     static boolean isPunc(char c) {
-        return c == '{' || c == '(' || c == ')' || c == '}' || c == ';' || c == ',';
+        return c == '{' || c == '(' || c == ')' || c == '}' || c == ';' || c == ',' || c == '[' || c == ']';
     }
 
     public List<Token> getTokens() {

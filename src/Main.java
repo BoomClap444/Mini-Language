@@ -9,28 +9,22 @@ import interpreter.Interpreter;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("running");
-
-
         String source = """
-        func add(a, b) {
-            return a + b;
-        }
+        let numbers = [10, 20, 30];
 
-        let result = add(5, 10);
+        let x = numbers[1];
+
+        numbers[1] = 50;
         """;
         
-        // PRINT TOKENS AFTER LEXING
+        // LEXER
         Lexer lexer = new Lexer(source);
-        for (Token token : lexer.getTokens()) {
-            token.printToken();
-        }
+        List<Token> tokens = lexer.getTokens();
 
         // PARSE PROGRAM
-        Parser parser = new Parser(lexer.getTokens());
+        Parser parser = new Parser(tokens);
         Program program = parser.parseProgram();
         
-
         // INTERPRET
         Interpreter interpreter = new Interpreter();
         interpreter.execute(program);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast.ASTNode;
+import ast.ArrayLiteral;
 import ast.LetStatement;
 import ast.NumberLiteral;
 import ast.IdentifierExpression;
@@ -14,6 +15,8 @@ import ast.UnaryExpression;
 import ast.AssignmentStatement;
 import ast.BlockStatement;
 import ast.IfStatement;
+import ast.IndexAssignmentStatement;
+import ast.IndexExpression;
 import ast.WhileStatement;
 import ast.ForStatement;
 import ast.FunctionDeclaration;
@@ -89,6 +92,21 @@ public class Interpreter {
             throw new ReturnSignal(value);
         }
 
+        if (statement instanceof IndexAssignmentStatement indexAssignment) {
+            Object arrayValue = evaluate(indexAssignment.getArray());
+            Object indexValue = evaluate(indexAssignment.getIndex());
+            Object value = evaluate(indexAssignment.getValue());
+
+            List<Object> array = (List<Object>) arrayValue;
+            int index = (Integer) indexValue;
+
+            if (index < 0 || index >= array.size()) {
+                throw new IllegalArgumentException("ERROR: ARRAY INDEX OUT OF BOUNDS");
+            }
+
+            array.set(index, value);
+            return;
+        }
 
         throw new IllegalArgumentException("ERROR: UNKNOWN STATEMENT");
     }
@@ -210,6 +228,31 @@ public class Interpreter {
 
             return null;
         }
+        
+        if (expression instanceof ArrayLiteral array) {
+            List<Object> elements = new ArrayList<>();
+
+            for (ASTNode element : array.getElements()) {
+                elements.add(evaluate(element));
+            }
+
+            return elements;
+        }
+
+        if (expression instanceof IndexExpression indexExpression) {
+            Object arrayValue = evaluate(indexExpression.getArray());
+            Object indexValue = evaluate(indexExpression.getIndex());
+
+            List<?> array = (List<?>) arrayValue;
+            int index = (Integer) indexValue;
+
+            if (index < 0 || index >= array.size()) {
+                throw new IllegalArgumentException("ERROR: ARRAY INDEX OUT OF BOUNDS");
+            }
+
+            return array.get(index);
+        }
+
         return null;
     }
 

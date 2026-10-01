@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast.ASTNode;
+import ast.ArrayLiteral;
 import ast.AssignmentStatement;
 import ast.BinaryExpression;
 import ast.BlockStatement;
@@ -12,6 +13,8 @@ import ast.FunctionCall;
 import ast.FunctionDeclaration;
 import ast.IdentifierExpression;
 import ast.IfStatement;
+import ast.IndexAssignmentStatement;
+import ast.IndexExpression;
 import ast.LetStatement;
 import ast.NumberLiteral;
 import ast.Program;
@@ -128,11 +131,14 @@ public class Parser {
         }
 
         if (currentToken().getType() == TokenType.IDENTIFIER) {
+            if (tokens.get(pos + 1).getType() == TokenType.LEFT_BRACKET) {
+                return parseIndexAssignmentStatement();
+            }
+
             if (tokens.get(pos + 1).getType() == TokenType.EQUALS) {
                 return parseAssignmentStatement();
             }
         }
-        
         
         throw new IllegalArgumentException("ERROR: UNEXPECTED STATEMENT");
     }
@@ -333,12 +339,21 @@ public class Parser {
             return expression;
         }
         if (currentToken().getType() == TokenType.IDENTIFIER) {
+            ASTNode expression;
+
             if (tokens.get(pos + 1).getType() == TokenType.LEFT_PAREN) {
-                return parseFunctionCall();
+                expression = parseFunctionCall();
+            }
+            
+            else {
+                expression = new IdentifierExpression(currentToken().getText());
+                advance();
             }
 
-            ASTNode expression = new IdentifierExpression(currentToken().getText());
-            advance();
+            while (currentToken().getType() == TokenType.LEFT_BRACKET) {
+                expression = parseIndexExpression(expression);
+            }
+
             return expression;
         }
 
@@ -375,7 +390,58 @@ public class Parser {
             return new UnaryExpression(operator, operand);
         }
 
+        if (currentToken().getType() == TokenType.LEFT_BRACKET) {
+            return parseArrayLiteral();
+        }
+        
         throw new IllegalArgumentException("ERROR: UNEXPECTED TYPE");
+    }
+
+    private IndexExpression parseIndexExpression(ASTNode array) {
+        advance(); // [
+
+        ASTNode index = parseExpression();
+
+        expect(TokenType.RIGHT_BRACKET);
+
+        return new IndexExpression(array, index);
+    }
+
+    private ArrayLiteral parseArrayLiteral() {
+        advance(); // [
+
+        List<ASTNode> elements = new ArrayList<>();
+
+        if (currentToken().getType() != TokenType.RIGHT_BRACKET) {
+            elements.add(parseExpression());
+
+            while (currentToken().getType() == TokenType.COMMA) {
+                advance(); // ,
+                elements.add(parseExpression());
+            }
+        }
+
+        expect(TokenType.RIGHT_BRACKET);
+
+        return new ArrayLiteral(elements);
+    }
+
+    private IndexAssignmentStatement parseIndexAssignmentStatement() {
+        ASTNode array = new IdentifierExpression(currentToken().getText());
+        advance();
+
+        expect(TokenType.LEFT_BRACKET);
+
+        ASTNode index = parseExpression();
+
+        expect(TokenType.RIGHT_BRACKET);
+        expect(TokenType.EQUALS);
+
+        ASTNode value = parseExpression();
+
+        expect(TokenType.SEMICOLON);
+
+        return new IndexAssignmentStatement(array, index, value);
     }
 
     private void expect(TokenType type) {
