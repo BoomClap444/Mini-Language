@@ -13,7 +13,11 @@ public class Main {
 
 
         String source = """
-        let x = 5 + 10 * 2;
+        func add(a, b) {
+            return a + b;
+        }
+
+        let result = add(5, 10);
         """;
         
         // PRINT TOKENS AFTER LEXING

@@ -17,4 +17,20 @@ public class ForStatement implements ASTNode {
         this.update = update;
         this.body = body;
     }
+
+    public ASTNode getInitialization() {
+        return this.initialization;
+    }
+
+    public ASTNode getCondition() {
+        return this.condition;
+    }
+
+    public ASTNode getUpdate() {
+        return this.update;
+    }
+
+    public BlockStatement getBody() {
+        return this.body;
+    }
 }
