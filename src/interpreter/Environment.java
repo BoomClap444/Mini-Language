@@ -32,7 +32,7 @@ public class Environment {
 
         throw new IllegalArgumentException("ERROR: UNDEFINED VARIABLE " + name);
     }
-    
+
     public Object get(String name) {
         if (variables.containsKey(name)) {
             return variables.get(name);

@@ -31,10 +31,15 @@ public class Interpreter {
     public Interpreter() {
         this.environment = new Environment();
     }
-
+    
     public void execute(Program program) {
-        for (ASTNode statement : program.getStatements()) {
-            executeStatement(statement);
+        try {
+            for (ASTNode statement : program.getStatements()) {
+                executeStatement(statement);
+            }
+        }
+        catch (ReturnSignal signal) {
+            throw new IllegalArgumentException("ERROR: RETURN OUTSIDE FUNCTION");
         }
     }
 

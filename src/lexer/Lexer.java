@@ -177,7 +177,7 @@ public class Lexer {
                 case "else":
                     type = TokenType.ELSE;
                     break;
-                case "function":
+                case "func":
                     type = TokenType.FUNC;
                     break;
                 case "return":
@@ -204,7 +204,7 @@ public class Lexer {
 
     static boolean isKeyword(String s) {
         return s.equals("let") || s.equals("if") ||
-        s.equals("else") || s.equals("function") ||
+        s.equals("else") || s.equals("func") ||
         s.equals("return") ||
         s.equals("false") ||
         s.equals("true") || s.equals("while") || s.equals("for");
