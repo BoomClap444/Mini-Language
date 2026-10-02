@@ -38,6 +38,7 @@ public enum TokenType {
     FOR,
     TRUE,
     FALSE,
+    PRINT,
 
     // eof, unknown
     EOF,

@@ -17,6 +17,7 @@ import ast.IndexAssignmentStatement;
 import ast.IndexExpression;
 import ast.LetStatement;
 import ast.NumberLiteral;
+import ast.PrintStatement;
 import ast.Program;
 import ast.ReturnStatement;
 import ast.StringLiteral;
@@ -114,6 +115,10 @@ public class Parser {
             return parseIfStatement();
         }
 
+        if (currentToken().getType() == TokenType.PRINT) {
+            return parsePrintStatement();
+        }
+        
         if (currentToken().getType() == TokenType.WHILE) {
             return parseWhileStatement();
         }
@@ -442,6 +447,19 @@ public class Parser {
         expect(TokenType.SEMICOLON);
 
         return new IndexAssignmentStatement(array, index, value);
+    }
+
+    private PrintStatement parsePrintStatement() {
+        advance(); // print
+
+        expect(TokenType.LEFT_PAREN);
+
+        ASTNode value = parseExpression();
+
+        expect(TokenType.RIGHT_PAREN);
+        expect(TokenType.SEMICOLON);
+
+        return new PrintStatement(value);
     }
 
     private void expect(TokenType expected) {

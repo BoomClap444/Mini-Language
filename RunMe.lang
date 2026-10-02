@@ -1,0 +1,105 @@
+func factorial(n) {
+    if n == 0 {
+        return 1;
+    }
+
+    return n * factorial(n - 1);
+}
+
+func sumArray(numbers) {
+    let total = 0;
+    let i = 0;
+
+    while i < 5 {
+        total = total + numbers[i];
+        i = i + 1;
+    }
+
+    return total;
+}
+
+func countUp(limit) {
+    let i = 0;
+
+    while i < limit {
+        print(i);
+        i = i + 1;
+    }
+
+    return i;
+}
+
+
+let numbers = [10, 20, 30, 40, 50];
+
+print("Starting program");
+
+print(numbers);
+
+let first = numbers[0];
+let third = numbers[2];
+
+print(first);
+print(third);
+
+numbers[0] = 100;
+numbers[2] = 300;
+
+print(numbers);
+
+let total = sumArray(numbers);
+
+print(total);
+
+let factorialFive = factorial(5);
+
+print(factorialFive);
+
+let a = 10;
+let b = 20;
+
+let lessThan = a < b;
+let greaterThan = b > a;
+let equal = a == b;
+
+print(lessThan);
+print(greaterThan);
+print(equal);
+
+let conditionOne = a < b;
+let conditionTwo = b > 15;
+
+if conditionOne && conditionTwo {
+    print("Both conditions are true");
+} else {
+    print("At least one condition is false");
+}
+
+let conditionThree = a > b;
+let conditionFour = a == b;
+
+if conditionThree || conditionFour {
+    print("At least one condition is true");
+} else {
+    print("Both conditions are false");
+}
+
+let i = 0;
+
+while i < 5 {
+    print(i);
+    i = i + 1;
+}
+
+let countdown = 5;
+
+while countdown > 0 {
+    print(countdown);
+    countdown = countdown - 1;
+}
+
+let finalValue = countUp(3);
+
+print(finalValue);
+
+print("Program finished");

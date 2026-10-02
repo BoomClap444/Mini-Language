@@ -7,6 +7,7 @@ import ast.ASTNode;
 import ast.ArrayLiteral;
 import ast.LetStatement;
 import ast.NumberLiteral;
+import ast.PrintStatement;
 import ast.IdentifierExpression;
 import ast.BooleanLiteral;
 import ast.StringLiteral;
@@ -53,6 +54,12 @@ public class Interpreter {
         if (statement instanceof AssignmentStatement assignment) {
             Object value = evaluate(assignment.getValue());
             environment.assign(assignment.getVariableName(), value);
+            return;
+        }
+
+        if (statement instanceof PrintStatement printStatement) {
+            Object value = evaluate(printStatement.getValue());
+            System.out.println(value);
             return;
         }
 
@@ -139,6 +146,7 @@ public class Interpreter {
                 throw new IllegalArgumentException("ERROR: ARRAY INDEX MUST BE AN INTEGER");
             }
 
+            @SuppressWarnings("unchecked")
             List<Object> array = (List<Object>) arrayValue;
             int index = (Integer) indexValue;
 

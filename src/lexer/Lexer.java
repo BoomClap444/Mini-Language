@@ -195,6 +195,9 @@ public class Lexer {
                 case "for":
                     type = TokenType.FOR;
                     break;
+                case "print":
+                    type = TokenType.PRINT;
+                    break;
                 default:
                     break;
             }
@@ -207,7 +210,7 @@ public class Lexer {
         s.equals("else") || s.equals("func") ||
         s.equals("return") ||
         s.equals("false") ||
-        s.equals("true") || s.equals("while") || s.equals("for");
+        s.equals("true") || s.equals("while") || s.equals("for") || s.equals("print");
     }
 
     static boolean isComparison(char c) {
