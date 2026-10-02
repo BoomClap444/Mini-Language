@@ -47,16 +47,21 @@ public class Interpreter {
 
         if (statement instanceof AssignmentStatement assignment) {
             Object value = evaluate(assignment.getValue());
-            environment.set(assignment.getVariableName(), value);
+            environment.assign(assignment.getVariableName(), value);
             return;
         }
 
         if (statement instanceof IfStatement ifStatement) {
             Object condition = evaluate(ifStatement.getCondition());
 
+            if (!(condition instanceof Boolean)) {
+                throw new IllegalArgumentException("ERROR: IF CONDITION MUST BE BOOLEAN");
+            }
+
             if ((Boolean) condition) {
                 executeBlock(ifStatement.getThenBranch());
-            } else if (ifStatement.getElseBranch() != null) {
+            } 
+            else if (ifStatement.getElseBranch() != null) {
                 executeBlock(ifStatement.getElseBranch());
             }
 
@@ -64,8 +69,20 @@ public class Interpreter {
         }
 
         if (statement instanceof WhileStatement whileStatement) {
-            while ((Boolean) evaluate(whileStatement.getCondition())) {
+            Object condition = evaluate(whileStatement.getCondition());
+
+            if (!(condition instanceof Boolean)) {
+                throw new IllegalArgumentException("ERROR: WHILE CONDITION MUST BE BOOLEAN");
+            }
+
+            while ((Boolean) condition) {
                 executeBlock(whileStatement.getBody());
+
+                condition = evaluate(whileStatement.getCondition());
+
+                if (!(condition instanceof Boolean)) {
+                    throw new IllegalArgumentException("ERROR: WHILE CONDITION MUST BE BOOLEAN");
+                }
             }
 
             return;
@@ -74,9 +91,21 @@ public class Interpreter {
         if (statement instanceof ForStatement forStatement) {
             executeStatement(forStatement.getInitialization());
 
-            while ((Boolean) evaluate(forStatement.getCondition())) {
+            Object condition = evaluate(forStatement.getCondition());
+
+            if (!(condition instanceof Boolean)) {
+                throw new IllegalArgumentException("ERROR: FOR CONDITION MUST BE BOOLEAN");
+            }
+
+            while ((Boolean) condition) {
                 executeBlock(forStatement.getBody());
                 executeStatement(forStatement.getUpdate());
+
+                condition = evaluate(forStatement.getCondition());
+
+                if (!(condition instanceof Boolean)) {
+                    throw new IllegalArgumentException("ERROR: FOR CONDITION MUST BE BOOLEAN");
+                }
             }
 
             return;
@@ -96,6 +125,14 @@ public class Interpreter {
             Object arrayValue = evaluate(indexAssignment.getArray());
             Object indexValue = evaluate(indexAssignment.getIndex());
             Object value = evaluate(indexAssignment.getValue());
+
+            if (!(arrayValue instanceof List<?>)) {
+                throw new IllegalArgumentException("ERROR: VALUE IS NOT AN ARRAY");
+            }
+
+            if (!(indexValue instanceof Integer)) {
+                throw new IllegalArgumentException("ERROR: ARRAY INDEX MUST BE AN INTEGER");
+            }
 
             List<Object> array = (List<Object>) arrayValue;
             int index = (Integer) indexValue;
@@ -134,16 +171,32 @@ public class Interpreter {
 
             switch (binary.getOperator()) {
                 case LESS_THAN:
-                    return (Integer) left < (Integer) right;
+                    if (left instanceof Integer && right instanceof Integer) {
+                        return (Integer) left < (Integer) right;
+                    }
+
+                    throw new IllegalArgumentException("ERROR: INVALID TYPES FOR <");
 
                 case GREATER_THAN:
-                    return (Integer) left > (Integer) right;
+                    if (left instanceof Integer && right instanceof Integer) {
+                        return (Integer) left > (Integer) right;
+                    }
+
+                    throw new IllegalArgumentException("ERROR: INVALID TYPES FOR >");
 
                 case LESS_EQUALS:
-                    return (Integer) left <= (Integer) right;
+                    if (left instanceof Integer && right instanceof Integer) {
+                        return (Integer) left <= (Integer) right;
+                    }
+
+                    throw new IllegalArgumentException("ERROR: INVALID TYPES FOR <=");
 
                 case GREATER_EQUALS:
-                    return (Integer) left >= (Integer) right;
+                    if (left instanceof Integer && right instanceof Integer) {
+                        return (Integer) left >= (Integer) right;
+                    }
+
+                    throw new IllegalArgumentException("ERROR: INVALID TYPES FOR >=");
 
                 case EQUALS_EQUALS:
                     return left.equals(right);
@@ -152,23 +205,52 @@ public class Interpreter {
                     return !left.equals(right);
                 
                 case AND:
-                    return (Boolean) left && (Boolean) right;
+                    if (left instanceof Boolean && right instanceof Boolean) {
+                        return (Boolean) left && (Boolean) right;
+                    }
+
+                    throw new IllegalArgumentException("ERROR: INVALID TYPES FOR &&");
 
                 case OR:
-                    return (Boolean) left || (Boolean) right;
+                    if (left instanceof Boolean && right instanceof Boolean) {
+                        return (Boolean) left || (Boolean) right;
+                    }
+
+                    throw new IllegalArgumentException("ERROR: INVALID TYPES FOR ||");
                     
                 case PLUS:
-                    return (Integer) left + (Integer) right;
+                    if (left instanceof Integer && right instanceof Integer) {
+                        return (Integer) left + (Integer) right;
+                    }
+
+                    throw new IllegalArgumentException("ERROR: INVALID TYPES FOR +");
 
                 case MINUS:
-                    return (Integer) left - (Integer) right;
+                    if (left instanceof Integer && right instanceof Integer) {
+                        return (Integer) left - (Integer) right;
+                    }
+
+                    throw new IllegalArgumentException("ERROR: INVALID TYPES FOR -");
 
                 case MULTIPLY:
-                    return (Integer) left * (Integer) right;
+                    if (left instanceof Integer && right instanceof Integer) {
+                        return (Integer) left * (Integer) right;
+                    }
+
+                    throw new IllegalArgumentException("ERROR: INVALID TYPES FOR *");
 
                 case DIVIDE:
-                    return (Integer) left / (Integer) right;
+                    if (!(left instanceof Integer) || !(right instanceof Integer)) {
+                        throw new IllegalArgumentException(
+                            "ERROR: INVALID TYPES FOR /"
+                        );
+                    }
 
+                    if ((Integer) right == 0) {
+                        throw new IllegalArgumentException("ERROR: DIVISION BY ZERO");
+                    }
+
+                    return (Integer) left / (Integer) right;
                 default:
                     throw new IllegalArgumentException("ERROR: UNKNOWN BINARY OPERATOR");
             }
@@ -180,7 +262,11 @@ public class Interpreter {
 
             switch (unary.getOperator()) {
                 case NOT:
-                    return !(Boolean) operand;
+                    if (operand instanceof Boolean) {
+                        return !(Boolean) operand;
+                    }
+
+                    throw new IllegalArgumentException("ERROR: INVALID TYPE FOR !");
 
                 default:
                     throw new IllegalArgumentException("ERROR: UNKNOWN UNARY OPERATOR");
@@ -188,19 +274,19 @@ public class Interpreter {
         }
 
         if (expression instanceof FunctionCall functionCall) {
-            FunctionDeclaration function = (FunctionDeclaration) environment.get(functionCall.getName());
+            Object functionValue = environment.get(functionCall.getName());
 
-            if (function == null) {
-                throw new IllegalArgumentException("ERROR: UNDEFINED FUNCTION " + functionCall.getName());
+            if (!(functionValue instanceof FunctionDeclaration)) {
+                throw new IllegalArgumentException("ERROR: VALUE IS NOT A FUNCTION");
             }
+
+            FunctionDeclaration function = (FunctionDeclaration) functionValue;
 
             List<ASTNode> arguments = functionCall.getArguments();
             List<String> parameters = function.getParameters();
 
             if (arguments.size() != parameters.size()) {
-                throw new IllegalArgumentException(
-                    "ERROR: WRONG NUMBER OF ARGUMENTS"
-                );
+                throw new IllegalArgumentException("ERROR: WRONG NUMBER OF ARGUMENTS");
             }
 
             List<Object> argumentValues = new ArrayList<>();
@@ -243,6 +329,16 @@ public class Interpreter {
             Object arrayValue = evaluate(indexExpression.getArray());
             Object indexValue = evaluate(indexExpression.getIndex());
 
+            if (!(arrayValue instanceof List<?>)) {
+                throw new IllegalArgumentException("ERROR: VALUE IS NOT AN ARRAY");
+            }
+
+            if (!(indexValue instanceof Integer)) {
+                throw new IllegalArgumentException(
+                    "ERROR: ARRAY INDEX MUST BE AN INTEGER"
+                );
+            }
+
             List<?> array = (List<?>) arrayValue;
             int index = (Integer) indexValue;
 
@@ -253,7 +349,7 @@ public class Interpreter {
             return array.get(index);
         }
 
-        return null;
+        throw new IllegalArgumentException("ERROR: UNKNOWN EXPRESSION");
     }
 
     private void executeBlock(BlockStatement block) {

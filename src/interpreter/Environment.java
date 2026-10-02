@@ -19,6 +19,20 @@ public class Environment {
         variables.put(name, value);
     }
 
+    public void assign(String name, Object value) {
+        if (variables.containsKey(name)) {
+            variables.put(name, value);
+            return;
+        }
+
+        if (parent != null) {
+            parent.assign(name, value);
+            return;
+        }
+
+        throw new IllegalArgumentException("ERROR: UNDEFINED VARIABLE " + name);
+    }
+    
     public Object get(String name) {
         if (variables.containsKey(name)) {
             return variables.get(name);
@@ -28,6 +42,6 @@ public class Environment {
             return parent.get(name);
         }
 
-        return null;
+        throw new IllegalArgumentException("ERROR: UNDEFINED VARIABLE " + name);
     }
 }

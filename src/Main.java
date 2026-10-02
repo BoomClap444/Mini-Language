@@ -10,11 +10,7 @@ import interpreter.Interpreter;
 public class Main {
     public static void main(String[] args) {
         String source = """
-        let numbers = [10, 20, 30];
-
-        let x = numbers[1];
-
-        numbers[1] = 50;
+        let x = y;
         """;
         
         // LEXER

@@ -444,10 +444,11 @@ public class Parser {
         return new IndexAssignmentStatement(array, index, value);
     }
 
-    private void expect(TokenType type) {
-        if (currentToken().getType() != type) {
-            throw new IllegalArgumentException(
-                "Expected " + type + ", got " + currentToken().getType()
+    private void expect(TokenType expected) {
+    if (currentToken().getType() != expected) {
+        throw new IllegalArgumentException(
+            "ERROR: EXPECTED " + expected +
+            " BUT FOUND " + currentToken().getType()
             );
         }
 
